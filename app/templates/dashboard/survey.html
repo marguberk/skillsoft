@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-3xl mx-auto">
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <div class="mb-6">
+                <h1 class="text-2xl font-bold text-gray-900 mb-2">Оценка навыков</h1>
+                <p class="text-gray-600">
+                    Оцените каждое утверждение по шкале от 1 до 5, где:
+                </p>
+                <div class="mt-2 grid grid-cols-5 gap-2 text-sm text-gray-600">
+                    <div class="text-center">
+                        <span class="block font-semibold">1</span>
+                        <span>Никогда</span>
+                    </div>
+                    <div class="text-center">
+                        <span class="block font-semibold">2</span>
+                        <span>Редко</span>
+                    </div>
+                    <div class="text-center">
+                        <span class="block font-semibold">3</span>
+                        <span>Иногда</span>
+                    </div>
+                    <div class="text-center">
+                        <span class="block font-semibold">4</span>
+                        <span>Часто</span>
+                    </div>
+                    <div class="text-center">
+                        <span class="block font-semibold">5</span>
+                        <span>Всегда</span>
+                    </div>
+                </div>
+            </div>
+
+            <form method="POST" class="space-y-8" id="surveyForm">
+                {{ form.hidden_tag() }}
+
+                {% for skill, questions in grouped_questions.items() %}
+                <div class="space-y-6">
+                    <h2 class="text-xl font-semibold text-gray-900">{{ skill }}</h2>
+                    {% for question in questions %}
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <p class="text-gray-800 mb-3">{{ question.question }}</p>
+                        <div class="grid grid-cols-5 gap-4">
+                            {% for value in range(1, 6) %}
+                            <div class="text-center">
+                                <input type="radio"
+                                       name="question_{{ question.id }}"
+                                       value="{{ value }}"
+                                       id="q{{ question.id }}_{{ value }}"
+                                       class="sr-only peer"
+                                       required>
+                                <label for="q{{ question.id }}_{{ value }}"
+                                       class="block w-full py-2 rounded cursor-pointer
+                                              bg-white border border-gray-200
+                                              peer-checked:bg-blue-500 peer-checked:text-white
+                                              hover:bg-gray-100 transition-colors">
+                                    {{ value }}
+                                </label>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endfor %}
+
+                <div class="mt-8">
+                    <button type="submit"
+                            class="w-full py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        Завершить оценку
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Индикатор прогресса -->
+        <div class="fixed bottom-0 left-0 right-0 bg-white shadow-lg p-4">
+            <div class="max-w-3xl mx-auto">
+                <div class="flex items-center justify-between text-sm text-gray-600 mb-2">
+                    <span>Прогресс</span>
+                    <span class="font-medium progress-text">0%</span>
+                </div>
+                <div class="h-2 bg-gray-200 rounded-full">
+                    <div class="h-2 bg-blue-500 rounded-full progress-bar" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('surveyForm');
+    const radios = form.querySelectorAll('input[type="radio"]');
+    const progressBar = document.querySelector('.progress-bar');
+    const progressText = document.querySelector('.progress-text');
+    const totalQuestions = {{ total_questions }};
+
+    function updateProgress() {
+        const answered = form.querySelectorAll('input[type="radio"]:checked').length;
+        const progress = (answered / totalQuestions) * 100;
+        progressBar.style.width = `${progress}%`;
+        progressText.textContent = `${Math.round(progress)}%`;
+    }
+
+    radios.forEach(radio => {
+        radio.addEventListener('change', updateProgress);
+    });
+
+    // Отслеживаем отправку формы
+    form.addEventListener('submit', function(e) {
+        const answered = form.querySelectorAll('input[type="radio"]:checked').length;
+        if (answered < totalQuestions) {
+            e.preventDefault();
+            alert('Пожалуйста, ответьте на все вопросы!');
+        }
+    });
+});
+</script>
+{% endblock %}

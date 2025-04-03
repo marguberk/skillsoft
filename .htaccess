@@ -1,0 +1,3 @@
+<IfModule mod_passenger.c>
+    PassengerPython /var/www/vhosts/[ваш-домен]/[путь-к-проекту]/venv/bin/python
+</IfModule>

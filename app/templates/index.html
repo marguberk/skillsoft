@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <!-- Главный баннер -->
+    <div class="text-center mb-16">
+        <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+            Развивайте свои soft skills с SkillSoft
+        </h1>
+        <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+            Платформа для системного развития гибких навыков, основанная на научном подходе и современных методиках обучения
+        </p>
+        {% if not current_user.is_authenticated %}
+        <div class="mt-8 space-x-4">
+            <a href="{{ url_for('auth.register') }}"
+               class="inline-block py-3 px-8 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition duration-300">
+                Начать бесплатно
+            </a>
+            <a href="{{ url_for('auth.login') }}"
+               class="inline-block py-3 px-8 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg transition duration-300">
+                Войти
+            </a>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Что такое soft skills -->
+    <div class="mb-20">
+        <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">Что такое soft skills?</h2>
+        <div class="grid md:grid-cols-2 gap-12 items-center">
+            <div>
+                <p class="text-lg text-gray-600 mb-6">
+                    Soft skills (гибкие навыки) — это комплекс неспециализированных, надпрофессиональных навыков, которые отвечают за успешное участие в рабочем процессе и высокую производительность.
+                </p>
+                <p class="text-lg text-gray-600">
+                    В отличие от hard skills (профессиональных навыков), soft skills не зависят от конкретной специальности, а необходимы в любой сфере деятельности.
+                </p>
+            </div>
+            <div class="bg-gray-50 rounded-lg p-8">
+                <h3 class="text-xl font-semibold text-gray-900 mb-4">Ключевые soft skills включают:</h3>
+                <ul class="space-y-3">
+                    <li class="flex items-start">
+                        <svg class="h-6 w-6 text-blue-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                        </svg>
+                        <span class="text-gray-700">Коммуникативные навыки</span>
+                    </li>
+                    <li class="flex items-start">
+                        <svg class="h-6 w-6 text-blue-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                        </svg>
+                        <span class="text-gray-700">Эмоциональный интеллект</span>
+                    </li>
+                    <li class="flex items-start">
+                        <svg class="h-6 w-6 text-blue-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                        </svg>
+                        <span class="text-gray-700">Критическое мышление</span>
+                    </li>
+                    <li class="flex items-start">
+                        <svg class="h-6 w-6 text-blue-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                        </svg>
+                        <span class="text-gray-700">Адаптивность и гибкость</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Статистика и исследования -->
+    <div class="bg-blue-50 rounded-2xl p-8 mb-20">
+        <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">Почему soft skills важны?</h2>
+        <div class="grid md:grid-cols-3 gap-8">
+            <div class="bg-white rounded-lg p-6 text-center">
+                <div class="text-4xl font-bold text-blue-600 mb-2">85%</div>
+                <p class="text-gray-600">успеха в карьере зависит от развитых soft skills</p>
+            </div>
+            <div class="bg-white rounded-lg p-6 text-center">
+                <div class="text-4xl font-bold text-blue-600 mb-2">77%</div>
+                <p class="text-gray-600">работодателей считают soft skills важнее hard skills</p>
+            </div>
+            <div class="bg-white rounded-lg p-6 text-center">
+                <div class="text-4xl font-bold text-blue-600 mb-2">2x</div>
+                <p class="text-gray-600">выше шанс получить работу при развитых soft skills</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Как это работает -->
+    <div class="mb-20">
+        <h2 class="text-3xl font-bold text-gray-900 mb-12 text-center">Как работает наша платформа</h2>
+        <div class="grid md:grid-cols-3 gap-8">
+            <div class="text-center">
+                <div class="bg-blue-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                    <svg class="h-8 w-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">Оценка навыков</h3>
+                <p class="text-gray-600">Пройдите тестирование для определения текущего уровня ваших soft skills</p>
+            </div>
+            <div class="text-center">
+                <div class="bg-blue-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                    <svg class="h-8 w-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">Персональный план</h3>
+                <p class="text-gray-600">Получите индивидуальную программу развития на основе результатов оценки</p>
+            </div>
+            <div class="text-center">
+                <div class="bg-blue-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                    <svg class="h-8 w-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">Практика и развитие</h3>
+                <p class="text-gray-600">Выполняйте практические задания и отслеживайте свой прогресс</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- История успеха -->
+    <div class="bg-gray-50 rounded-2xl p-8">
+        <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">История развития soft skills</h2>
+        <div class="max-w-3xl mx-auto">
+            <div class="prose prose-lg">
+                <p class="mb-4">
+                    Термин "soft skills" появился в военной подготовке США в 1959 году, где была признана важность навыков, не связанных с использованием техники и оружия.
+                </p>
+                <p class="mb-4">
+                    В 1968 году армия США официально начала включать развитие soft skills в программы подготовки. С тех пор концепция получила широкое распространение в бизнесе и образовании.
+                </p>
+                <p>
+                    Сегодня, в эпоху автоматизации и искусственного интеллекта, soft skills становятся все более важными, так как это именно те навыки, которые отличают человека от машины.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Анимация появления элементов при скролле
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('animate__animated', 'animate__fadeInUp');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, {
+        threshold: 0.1
+    });
+
+    // Добавляем анимацию для всех основных секций
+    document.querySelectorAll('.mb-20').forEach(section => {
+        observer.observe(section);
+    });
+});
+</script>
+{% endblock %}

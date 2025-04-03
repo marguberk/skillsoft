@@ -1,0 +1,487 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Навигация -->
+        <nav class="flex items-center mb-8">
+            <a href="{{ url_for('dashboard.learning') }}" class="flex items-center text-gray-600 hover:text-gray-900">
+                <i class="fas fa-arrow-left mr-2"></i> Вернуться к курсам
+            </a>
+            <div class="ml-4 flex-grow bg-gray-200 rounded-full h-2">
+                <div class="bg-blue-600 h-2 rounded-full transition-all duration-300" style="width: {{ progress.progress }}%"></div>
+            </div>
+        </nav>
+
+        <!-- Заголовок урока -->
+        <header class="bg-white rounded-lg shadow-sm p-6 mb-8">
+            <h1 class="text-3xl font-bold text-gray-900">{{ lesson.title }}</h1>
+            <div class="mt-2 flex items-center text-sm text-gray-500">
+                <span class="flex items-center">
+                    <i class="far fa-clock mr-1"></i>
+                    {{ lesson.duration }} минут
+                </span>
+                <span class="mx-2">•</span>
+                <span class="flex items-center capitalize {{ 'text-green-600' if lesson.difficulty == 'beginner' else 'text-yellow-600' if lesson.difficulty == 'intermediate' else 'text-red-600' }}">
+                    <i class="fas fa-signal mr-1"></i>
+                    {{ lesson.difficulty }}
+                </span>
+            </div>
+        </header>
+
+        <!-- Содержание урока -->
+        <article class="bg-white rounded-lg shadow-sm p-6 mb-8 prose prose-blue max-w-none">
+            {{ lesson.content|safe }}
+        </article>
+
+        <!-- Тест -->
+        {% if quiz_questions %}
+        <section id="quiz-section" class="bg-white rounded-lg shadow-sm p-6">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">Проверьте свои знания</h2>
+            <div class="space-y-8">
+                {% for question in quiz_questions %}
+                <div class="quiz-question" data-question-id="{{ question.id }}" data-type="{{ question.question_type }}">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">{{ question.question }}</h3>
+                    
+                    {% if question.question_type == 'single_choice' %}
+                    <div class="space-y-3">
+                        {% for option in question.options %}
+                        <label class="flex items-center p-4 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                            <input type="radio" name="q{{ question.id }}" value="{{ option }}" class="h-4 w-4 text-blue-600">
+                            <span class="ml-3">{{ option }}</span>
+                        </label>
+                        {% endfor %}
+                    </div>
+
+                    {% elif question.question_type == 'multiple_choice' %}
+                    <div class="space-y-3">
+                        {% for option in question.options %}
+                        <label class="flex items-center p-4 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                            <input type="checkbox" name="q{{ question.id }}" value="{{ option }}" class="h-4 w-4 text-blue-600">
+                            <span class="ml-3">{{ option }}</span>
+                        </label>
+                        {% endfor %}
+                    </div>
+
+                    {% elif question.question_type == 'matching' %}
+                    <div class="matching-game grid grid-cols-2 gap-4">
+                        <div class="left-items space-y-2 min-h-[200px] p-4 bg-gray-100 rounded-lg">
+                            {% for item in question.options %}
+                            <div class="matching-item p-4 bg-white rounded-lg shadow cursor-move hover:shadow-md transition-shadow" 
+                                 data-left="{{ item.left }}"
+                                 draggable="true">
+                                {{ item.left }}
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <div class="right-items space-y-2 min-h-[200px] p-4 bg-gray-100 rounded-lg">
+                            {% for item in question.options %}
+                            <div class="matching-slot p-4 bg-white border-2 border-dashed border-gray-300 rounded-lg min-h-[3rem] hover:border-blue-500 transition-colors"
+                                 data-right="{{ item.right }}"
+                                 data-empty="true">
+                                {{ item.right }}
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    {% elif question.question_type == 'flashcard' %}
+                    <div class="flashcard-container perspective-1000 mb-4">
+                        <div class="flashcard relative w-full h-64 cursor-pointer transition-transform duration-700 transform-style-3d">
+                            <div class="flashcard-front absolute w-full h-full bg-white p-6 rounded-lg shadow flex items-center justify-center backface-hidden">
+                                <p class="text-lg">{{ question.options.front }}</p>
+                            </div>
+                            <div class="flashcard-back absolute w-full h-full bg-blue-50 p-6 rounded-lg shadow flex items-center justify-center backface-hidden rotate-y-180">
+                                <p class="text-lg">{{ question.options.back }}</p>
+                            </div>
+                        </div>
+                        <div class="mt-4 text-center text-sm text-gray-500">
+                            Нажмите на карточку, чтобы увидеть ответ
+                        </div>
+                    </div>
+
+                    {% elif question.question_type == 'ordering' %}
+                    <div class="ordering-game space-y-2 min-h-[200px] p-4 bg-gray-100 rounded-lg">
+                        {% for item in question.options %}
+                        <div class="ordering-item p-4 bg-white rounded-lg shadow cursor-move hover:shadow-md transition-shadow" 
+                             data-value="{{ item }}">
+                            {{ item }}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    <div class="feedback hidden mt-4 p-4 rounded-lg"></div>
+                </div>
+                {% endfor %}
+
+                <button class="submit-quiz w-full px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors" disabled>
+                    Проверить ответы
+                </button>
+
+                <div id="completion-message" class="hidden text-center py-8">
+                    <h3 class="text-xl font-bold text-gray-900 mb-4">Поздравляем! Вы завершили урок!</h3>
+                    <div class="space-x-4">
+                        <a href="{{ url_for('dashboard.learning') }}" class="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors">
+                            <i class="fas fa-graduation-cap mr-2"></i>
+                            Продолжить обучение
+                        </a>
+                        <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="inline-flex items-center px-6 py-3 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors">
+                            <i class="fas fa-redo mr-2"></i>
+                            Повторить урок
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block head %}
+{{ super() }}
+<style>
+.perspective-1000 {
+    perspective: 1000px;
+}
+
+.transform-style-3d {
+    transform-style: preserve-3d;
+}
+
+.backface-hidden {
+    backface-visibility: hidden;
+}
+
+.rotate-y-180 {
+    transform: rotateY(180deg);
+}
+
+.flashcard.flipped {
+    transform: rotateY(180deg);
+}
+
+.matching-item.dragging {
+    opacity: 0.5;
+}
+
+.matching-slot.active {
+    border-color: #3B82F6;
+    background-color: #EFF6FF;
+}
+
+.ordering-item.dragging {
+    opacity: 0.5;
+}
+
+.matching-item {
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.matching-item.dragging {
+    opacity: 0.5;
+    background-color: #EFF6FF;
+    border: 2px solid #3B82F6;
+}
+
+.matching-slot.active {
+    border-color: #3B82F6;
+    background-color: #EFF6FF;
+}
+
+.matching-slot.matched {
+    border-style: solid;
+    border-color: #10B981;
+    background-color: #ECFDF5;
+}
+
+.ordering-item {
+    user-select: none;
+    -webkit-user-select: none;
+    background-color: white;
+    padding: 1rem;
+    margin-bottom: 0.5rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    cursor: move;
+}
+
+.ordering-item:hover {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.ordering-item.dragging {
+    opacity: 0.5;
+    background-color: #EFF6FF;
+    border: 2px solid #3B82F6;
+}
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.14.0/Sortable.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const quizSection = document.getElementById('quiz-section');
+    if (!quizSection) return;
+
+    const lessonSlug = '{{ lesson.slug }}';
+    const questions = document.querySelectorAll('.quiz-question');
+    const submitButton = document.querySelector('.submit-quiz');
+    const completionMessage = document.getElementById('completion-message');
+
+    // Инициализация Sortable для matching и ordering
+    questions.forEach(question => {
+        const type = question.dataset.type;
+        const questionId = question.dataset.questionId;
+        
+        if (type === 'matching') {
+            const leftItems = question.querySelector('.left-items');
+            const rightItems = question.querySelector('.right-items');
+            
+            // Создаем уникальную группу для каждого вопроса
+            const group = `matching-${questionId}`;
+            
+            // Инициализируем левую колонку
+            Sortable.create(leftItems, {
+                group: {
+                    name: group,
+                    pull: 'clone',
+                    put: false
+                },
+                animation: 150,
+                sort: false,
+                onStart: function(evt) {
+                    evt.item.classList.add('dragging');
+                },
+                onEnd: function(evt) {
+                    evt.item.classList.remove('dragging');
+                }
+            });
+            
+            // Инициализируем правую колонку
+            Sortable.create(rightItems, {
+                group: {
+                    name: group,
+                    pull: false,
+                    put: true
+                },
+                animation: 150,
+                sort: false,
+                onAdd: function(evt) {
+                    const item = evt.item;
+                    const slot = evt.target.children[evt.newIndex];
+                    
+                    if (slot) {
+                        slot.dataset.currentLeft = item.dataset.left;
+                        slot.dataset.empty = 'false';
+                        checkMatchingPairs(question);
+                    }
+                }
+            });
+        } else if (type === 'ordering') {
+            const orderingGame = question.querySelector('.ordering-game');
+            Sortable.create(orderingGame, {
+                group: `ordering-${questionId}`,
+                animation: 150
+            });
+        }
+    });
+
+    // Инициализация флэш-карточек
+    document.querySelectorAll('.flashcard').forEach(card => {
+        card.addEventListener('click', () => {
+            card.classList.toggle('flipped');
+            checkAllAnswered();
+        });
+    });
+
+    // Отслеживаем выбор ответов
+    questions.forEach(question => {
+        const type = question.dataset.type;
+        
+        if (type === 'single_choice' || type === 'multiple_choice') {
+            const inputs = question.querySelectorAll('input');
+            inputs.forEach(input => {
+                input.addEventListener('change', checkAllAnswered);
+            });
+        }
+    });
+
+    // Разрешаем проверку даже если не на все вопросы даны ответы
+    submitButton.disabled = false;
+
+    function checkAllAnswered() {
+        const answeredQuestions = Array.from(questions).filter(question => {
+            const type = question.dataset.type;
+            
+            if (type === 'single_choice') {
+                return Array.from(question.querySelectorAll('input[type="radio"]')).some(r => r.checked);
+            } else if (type === 'multiple_choice') {
+                return Array.from(question.querySelectorAll('input[type="checkbox"]')).some(c => c.checked);
+            } else if (type === 'matching') {
+                return Array.from(question.querySelectorAll('.matching-slot')).some(slot => 
+                    slot.dataset.empty === 'false'
+                );
+            } else if (type === 'ordering') {
+                return true;
+            } else if (type === 'flashcard') {
+                return true;
+            }
+            return false;
+        });
+
+        // Показываем количество отвеченных вопросов
+        submitButton.textContent = `Проверить ответы (${answeredQuestions.length}/${questions.length})`;
+    }
+
+    function checkMatchingPairs(question) {
+        const slots = question.querySelectorAll('.matching-slot');
+        slots.forEach(slot => {
+            const leftValue = slot.dataset.currentLeft;
+            const rightValue = slot.dataset.right;
+            
+            if (leftValue && rightValue) {
+                slot.classList.add('matched');
+            } else {
+                slot.classList.remove('matched');
+            }
+        });
+        
+        checkAllAnswered();
+    }
+
+    // Отправка ответов
+    submitButton.addEventListener('click', async () => {
+        submitButton.disabled = true;
+        submitButton.textContent = 'Проверяем...';
+
+        let allCorrect = true;
+        let answeredCount = 0;
+
+        for (const question of questions) {
+            const questionId = question.dataset.questionId;
+            const type = question.dataset.type;
+            const feedbackEl = question.querySelector('.feedback');
+            
+            let answer;
+            if (type === 'single_choice') {
+                const selected = question.querySelector('input[type="radio"]:checked');
+                answer = selected ? selected.value : null;
+            } else if (type === 'multiple_choice') {
+                answer = Array.from(question.querySelectorAll('input[type="checkbox"]:checked'))
+                    .map(input => input.value);
+            } else if (type === 'matching') {
+                const slots = question.querySelectorAll('.matching-slot');
+                answer = Array.from(slots)
+                    .filter(slot => slot.dataset.empty === 'false')
+                    .map(slot => ({
+                        left: slot.dataset.currentLeft,
+                        right: slot.dataset.right
+                    }));
+            } else if (type === 'ordering') {
+                answer = Array.from(question.querySelectorAll('.ordering-item'))
+                    .map(item => item.dataset.value);
+            } else if (type === 'flashcard') {
+                answer = 'viewed';
+                answeredCount++;
+                continue; // Пропускаем проверку для флэш-карточек
+            }
+
+            if (!answer || (Array.isArray(answer) && answer.length === 0)) {
+                continue; // Пропускаем пустые ответы
+            }
+
+            answeredCount++;
+
+            try {
+                const response = await fetch(`/dashboard/lesson/${lessonSlug}/quiz`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        question_id: questionId,
+                        answer: answer
+                    })
+                });
+
+                const result = await response.json();
+                
+                feedbackEl.classList.remove('hidden', 'bg-green-50', 'text-green-800', 'bg-red-50', 'text-red-800');
+                feedbackEl.classList.add(result.is_correct ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800');
+                feedbackEl.innerHTML = result.is_correct ? 
+                    '<i class="fas fa-check-circle mr-2"></i> Правильно!' :
+                    `<i class="fas fa-times-circle mr-2"></i> Неправильно. ${result.explanation}`;
+                
+                if (!result.is_correct) {
+                    allCorrect = false;
+                }
+            } catch (error) {
+                console.error('Error submitting answer:', error);
+                feedbackEl.classList.remove('hidden');
+                feedbackEl.classList.add('bg-red-50', 'text-red-800');
+                feedbackEl.textContent = 'Произошла ошибка при проверке ответа';
+                allCorrect = false;
+            }
+        }
+
+        // Показываем сообщение о завершении если хотя бы на один вопрос ответили
+        if (answeredCount > 0) {
+            try {
+                await fetch(`/dashboard/lesson/${lessonSlug}/progress`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({ progress: 100 })
+                });
+
+                completionMessage.classList.remove('hidden');
+                completionMessage.scrollIntoView({ behavior: 'smooth' });
+            } catch (error) {
+                console.error('Error updating progress:', error);
+            }
+        }
+
+        submitButton.textContent = `Проверить ответы (${answeredCount}/${questions.length})`;
+        submitButton.disabled = false;
+    });
+
+    // Отслеживаем прогресс чтения
+    const content = document.querySelector('article');
+    const progressBar = document.querySelector('.bg-blue-600');
+    let lastProgress = 0;
+
+    const updateProgress = () => {
+        const contentHeight = content.scrollHeight - content.clientHeight;
+        const scrolled = window.scrollY - content.offsetTop;
+        const progress = Math.min(Math.round((scrolled / contentHeight) * 100), 100);
+
+        if (progress > lastProgress) {
+            lastProgress = progress;
+            progressBar.style.width = `${progress}%`;
+
+            fetch(`/dashboard/lesson/${lessonSlug}/progress`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ progress })
+            }).catch(error => console.error('Error updating progress:', error));
+        }
+    };
+
+    window.addEventListener('scroll', updateProgress);
+    updateProgress();
+    
+    // Инициализируем состояние кнопки
+    checkAllAnswered();
+});
+</script>
+{% endblock %} 

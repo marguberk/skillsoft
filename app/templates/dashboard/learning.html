@@ -1,0 +1,234 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="learning-container">
+    <header class="learning-header">
+        <h1>Доступные курсы</h1>
+        <p class="subtitle">Выберите курс для изучения и развития ваших навыков</p>
+    </header>
+
+    <div class="skills-grid">
+        {% for skill in skills %}
+        <div class="skill-section">
+            <h2>{{ skill.name }}</h2>
+            <div class="lessons-list">
+                {% for lesson in skill.lessons %}
+                <div class="lesson-card">
+                    <div class="lesson-info">
+                        <h3>{{ lesson.title }}</h3>
+                        <p>{{ lesson.description }}</p>
+                        <div class="lesson-meta">
+                            <span class="duration">
+                                <i class="far fa-clock"></i> {{ lesson.duration }} минут
+                            </span>
+                            <span class="difficulty {{ lesson.difficulty }}">
+                                <i class="fas fa-signal"></i> {{ lesson.difficulty }}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="lesson-progress">
+                        {% set progress = lesson.progress.filter_by(user_id=current_user.id).first() %}
+                        {% if progress %}
+                            <div class="progress-bar">
+                                <div class="progress" style="width: {{ progress.progress }}%"></div>
+                            </div>
+                            <span class="progress-text">{{ progress.progress }}% завершено</span>
+                        {% else %}
+                            <div class="progress-bar">
+                                <div class="progress" style="width: 0%"></div>
+                            </div>
+                            <span class="progress-text">Не начато</span>
+                        {% endif %}
+                    </div>
+                    <a href="{{ url_for('dashboard.lesson', slug=lesson.slug) }}" class="lesson-link">
+                        {% if progress and progress.status == 'completed' %}
+                            Повторить урок
+                        {% elif progress and progress.status == 'in_progress' %}
+                            Продолжить
+                        {% else %}
+                            Начать урок
+                        {% endif %}
+                    </a>
+                </div>
+                {% else %}
+                <div class="no-lessons">
+                    <p>Уроки в разработке</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block styles %}
+<style>
+.learning-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.learning-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.learning-header h1 {
+    font-size: 2.5rem;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+
+.subtitle {
+    color: #666;
+    font-size: 1.1rem;
+}
+
+.skills-grid {
+    display: grid;
+    gap: 2rem;
+}
+
+.skill-section {
+    background: white;
+    border-radius: 8px;
+    padding: 2rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.skill-section h2 {
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+.lessons-list {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.lesson-card {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 1.5rem;
+    display: grid;
+    gap: 1rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.lesson-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.lesson-info h3 {
+    color: #1976D2;
+    margin-bottom: 0.5rem;
+    font-size: 1.3rem;
+}
+
+.lesson-info p {
+    color: #666;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+}
+
+.lesson-meta {
+    display: flex;
+    gap: 1rem;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.difficulty {
+    text-transform: capitalize;
+}
+
+.difficulty.beginner { color: #4CAF50; }
+.difficulty.intermediate { color: #FFC107; }
+.difficulty.advanced { color: #F44336; }
+
+.lesson-progress {
+    margin: 1rem 0;
+}
+
+.progress-bar {
+    background: #e0e0e0;
+    height: 4px;
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+}
+
+.progress {
+    background: #4CAF50;
+    height: 100%;
+    transition: width 0.3s ease;
+}
+
+.progress-text {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.lesson-link {
+    display: inline-block;
+    padding: 0.8rem 1.5rem;
+    background: #1976D2;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    text-align: center;
+    transition: background-color 0.2s ease;
+}
+
+.lesson-link:hover {
+    background: #1565C0;
+}
+
+.no-lessons {
+    text-align: center;
+    padding: 2rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    color: #666;
+}
+
+@media (max-width: 768px) {
+    .learning-container {
+        padding: 1rem;
+    }
+
+    .learning-header h1 {
+        font-size: 2rem;
+    }
+
+    .skill-section {
+        padding: 1rem;
+    }
+
+    .lesson-card {
+        padding: 1rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .lesson-card {
+        transition: none;
+    }
+}
+
+@media (prefers-contrast: high) {
+    .lesson-card {
+        border: 2px solid #000;
+    }
+
+    .lesson-link {
+        border: 2px solid #000;
+    }
+}
+</style>
+{% endblock %}

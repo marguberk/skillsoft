@@ -1,0 +1,229 @@
+/* Основные стили урока */
+.lesson-section {
+    margin-bottom: 3rem;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+.lesson-section h2 {
+    font-size: 1.8rem;
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+    border-bottom: 2px solid #e0e0e0;
+    padding-bottom: 0.5rem;
+}
+
+.lesson-section p {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: #333;
+    margin-bottom: 1rem;
+}
+
+/* Информационный блок */
+.info-box {
+    background: #f8f9fa;
+    border-left: 4px solid #4CAF50;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+    border-radius: 4px;
+}
+
+.info-box h3 {
+    color: #2c3e50;
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+}
+
+.info-box ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.info-box li {
+    margin-bottom: 0.5rem;
+    padding-left: 1.5rem;
+    position: relative;
+}
+
+.info-box li:before {
+    content: "•";
+    color: #4CAF50;
+    font-weight: bold;
+    position: absolute;
+    left: 0;
+}
+
+/* Карточки принципов */
+.principle-card {
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.principle-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.principle-card h3 {
+    color: #1976D2;
+    margin-bottom: 1rem;
+    font-size: 1.4rem;
+}
+
+.example {
+    background: #f5f5f5;
+    padding: 1rem;
+    margin-top: 1rem;
+    border-radius: 4px;
+    font-size: 0.95rem;
+}
+
+/* Изображения и подписи */
+.image-section {
+    margin: 2rem 0;
+    text-align: center;
+}
+
+.image-section img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.caption {
+    color: #666;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+}
+
+/* Разделенный контент */
+.split-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin: 2rem 0;
+}
+
+.content-block {
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 8px;
+}
+
+.content-block h3 {
+    color: #2c3e50;
+    margin-bottom: 1rem;
+}
+
+.content-block ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.content-block li {
+    margin-bottom: 0.5rem;
+    padding-left: 1.5rem;
+    position: relative;
+}
+
+.content-block li:before {
+    content: "→";
+    color: #1976D2;
+    position: absolute;
+    left: 0;
+}
+
+/* Практические сценарии */
+.practice-scenario {
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.practice-scenario h3 {
+    color: #2c3e50;
+    margin-bottom: 1rem;
+}
+
+.solution {
+    background: #f8f9fa;
+    padding: 1.5rem;
+    margin-top: 1rem;
+    border-radius: 4px;
+}
+
+.solution ol {
+    padding-left: 1.2rem;
+    margin-top: 0.5rem;
+}
+
+.solution li {
+    margin-bottom: 0.5rem;
+}
+
+/* Анимации */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .lesson-section {
+        margin-bottom: 2rem;
+    }
+
+    .lesson-section h2 {
+        font-size: 1.5rem;
+    }
+
+    .principle-card {
+        padding: 1rem;
+    }
+
+    .split-content {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .practice-scenario {
+        padding: 1rem;
+    }
+}
+
+/* Улучшения для доступности */
+@media (prefers-reduced-motion: reduce) {
+    .lesson-section,
+    .principle-card {
+        animation: none;
+        transition: none;
+    }
+}
+
+/* Высококонтрастный режим */
+@media (prefers-contrast: high) {
+    .info-box,
+    .principle-card,
+    .content-block,
+    .practice-scenario {
+        border: 2px solid #000;
+    }
+
+    .principle-card h3,
+    .content-block li:before {
+        color: #000;
+    }
+} 
